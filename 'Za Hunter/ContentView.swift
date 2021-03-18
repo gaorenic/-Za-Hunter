@@ -27,7 +27,9 @@ struct ContentView: View {
             showsUserLocation: true,
             userTrackingMode: $userTrakingMode,
             annotationItems: places) { place in
-            MapPin(coordinate: place.annotaion.coordinate)
+            MapAnnotation(coordinate: place.annotation.coordinate) {
+                Marker(mapItem: place.mapItem)
+            }
         }
         .onAppear(perform: {
             performSearch(item: "Pizza")
@@ -44,19 +46,31 @@ struct ContentView: View {
                     let annotation = MKPointAnnotation()
                     annotation.coordinate = mapItem.placemark.coordinate
                     annotation.title = mapItem.name
-                    places.append(Place(annotaion: annotation, mapItem: mapItem))
+                    places.append(Place(annotation: annotation, mapItem: mapItem))
                 }
             }
         }
     }
-    struct ContentView_Previews: PreviewProvider {
-        static var previews: some View {
-            ContentView()
-        }
-    }
-    struct Place: Identifiable {
-        let id = UUID()
-        let annotaion: MKPointAnnotation
-        let mapItem:MKMapItem
+}
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
     }
 }
+struct Place: Identifiable {
+    let id = UUID()
+    let annotation: MKPointAnnotation
+    let mapItem:MKMapItem
+}
+struct Marker: View {
+    var mapItem: MKMapItem
+    var body: some View {
+        if let url = mapItem.url {
+            Link(destination:url, label: {
+                Image("pizza")
+            })
+        }
+    }
+}
+
+
